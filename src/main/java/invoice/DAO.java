@@ -76,10 +76,50 @@ public class DAO {
 	 * taille
 	 * @throws java.lang.Exception si la transaction a échoué
 	 */
-	public void createInvoice(CustomerEntity customer, int[] productIDs, int[] quantities)
-		throws Exception {
-		throw new UnsupportedOperationException("Pas encore implémenté");
+	public void createInvoice(CustomerEntity customer, int[] productIDs, int[] quantities) throws SQLException
+        {
+                String sql = "INSERT INTO Invoice VALUES ?";
+                
+                /*  (ID INTEGER IDENTITY,
+                    CustomerID INTEGER,
+                    Total DECIMAL(10,2) DEFAULT 0, 
+                    FOREIGN KEY (CustomerId) REFERENCES Customer(ID) ON DELETE CASCADE);*/
+                
+                Object[] ar = {0,customer.getCustomerId(), };
+                
+                try (Connection connection = myDataSource.getConnection();
+                     PreparedStatement stmt = connection.prepareStatement(sql))
+                {
+                    stmt.setObject(1, ar);
+                    
+                }
 	}
+        
+        public int getTotal(int[] productIDs, int[] quantities) throws SQLException
+        {
+            int total=0;
+            String sql = "SELECT Price AS NUMBER FROM Product WHERE ID = ?";
+            
+            for(int i=0; i<productIDs.length; i++)
+            {
+                try (Connection connection = myDataSource.getConnection();
+                    PreparedStatement statement = connection.prepareStatement(sql)) {
+                    statement.setInt(1, productIDs[i]);
+                    try (ResultSet resultSet = statement.executeQuery()) {
+                        if (resultSet.next()) {
+                                total = resultSet.getInt("NUMBER");
+                        }
+                    }
+                }
+            }
+            return total;
+        }
+
+        public int getNextInvoiceId() throws SQLException
+        {
+            int result=0;
+            return result;
+        }
 
 	/**
 	 *
