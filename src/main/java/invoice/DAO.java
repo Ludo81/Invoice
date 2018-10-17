@@ -78,18 +78,18 @@ public class DAO {
 	 */
 	public void createInvoice(CustomerEntity customer, int[] productIDs, int[] quantities) throws SQLException
         {
-                String sql = "INSERT INTO Invoice VALUES(?,?,?)";
+                String sql = "INSERT INTO Invoice VALUES(?,?,?)"; //Plusieurs ? pour les différentes valeurs
                 
-                Object[] ar = { numberOfInvoicesForCustomer(customer.getCustomerId())+1,
+                Object[] valeurs = { numberOfInvoicesForCustomer(customer.getCustomerId())+1, //tableau comprenant les 3 valeurs du dessus
                                 customer.getCustomerId(), 
                                 getTotal(productIDs, quantities)};
                 
                 try (Connection connection = myDataSource.getConnection();
                      PreparedStatement stmt = connection.prepareStatement(sql))
                 {
-                    stmt.setObject(1, ar[0]);
-                    stmt.setObject(2, ar[1]);
-                    stmt.setObject(3, ar[2]);
+                    stmt.setObject(1, valeurs[0]); //Pour valeur 1
+                    stmt.setObject(2, valeurs[1]); //Pour valeur 2
+                    stmt.setObject(3, valeurs[2]); //Pour valeur 3
                     stmt.executeUpdate();
                 }
 	}
