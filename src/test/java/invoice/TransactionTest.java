@@ -54,6 +54,15 @@ public class TransactionTest {
                 myConnection.close();
 		myDAO = null; // Pas vraiment utile
 	}
+        
+        @Test
+        public void testTotalPrice() throws SQLException {
+            int[] productIds = new int[]{0,1,2};
+            int[] quantities = new int[]{10,20,30};
+            
+            int total = myDAO.getTotal(productIds, quantities);
+            assertEquals(1400,total);
+        }
 	
 	@Test
 	public void canCreateInvoice() throws Exception {

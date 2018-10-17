@@ -21,8 +21,8 @@ public class DAO {
 	 */
 	public DAO(DataSource dataSource) {
 		this.myDataSource = dataSource;
-	}
-
+        }
+        
 	/**
 	 * Renvoie le chiffre d'affaire d'un client (somme du montant de ses factures)
 	 *
@@ -78,20 +78,19 @@ public class DAO {
 	 */
 	public void createInvoice(CustomerEntity customer, int[] productIDs, int[] quantities) throws SQLException
         {
-                String sql = "INSERT INTO Invoice VALUES ?";
+                String sql = "INSERT INTO Invoice VALUES(?,?,?)";
                 
-                /*  (ID INTEGER IDENTITY,
-                    CustomerID INTEGER,
-                    Total DECIMAL(10,2) DEFAULT 0, 
-                    FOREIGN KEY (CustomerId) REFERENCES Customer(ID) ON DELETE CASCADE);*/
-                
-                Object[] ar = {0,customer.getCustomerId(), };
+                Object[] ar = { numberOfInvoicesForCustomer(customer.getCustomerId())+1,
+                                customer.getCustomerId(), 
+                                getTotal(productIDs, quantities)};
                 
                 try (Connection connection = myDataSource.getConnection();
                      PreparedStatement stmt = connection.prepareStatement(sql))
                 {
-                    stmt.setObject(1, ar);
-                    
+                    stmt.setObject(1, ar[0]);
+                    stmt.setObject(2, ar[1]);
+                    stmt.setObject(3, ar[2]);
+                    stmt.executeUpdate();
                 }
 	}
         
@@ -107,18 +106,12 @@ public class DAO {
                     statement.setInt(1, productIDs[i]);
                     try (ResultSet resultSet = statement.executeQuery()) {
                         if (resultSet.next()) {
-                                total = resultSet.getInt("NUMBER");
+                                total = total + resultSet.getInt("NUMBER")*quantities[i];
                         }
                     }
                 }
             }
             return total;
-        }
-
-        public int getNextInvoiceId() throws SQLException
-        {
-            int result=0;
-            return result;
         }
 
 	/**
